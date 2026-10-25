@@ -22,7 +22,7 @@ declare const __app_id: string | undefined;
 declare const __initial_auth_token: string | undefined;
 
 // --- URL game trên Netlify: dán vào đây MỘT LẦN, không cần nhập mỗi lần ---
-const GAME_URL = ''; // ví dụ: 'https://ten-game.netlify.app'
+const GAME_URL = 'https://gehihi.pages.dev/'; // ví dụ: 'https://ten-game.netlify.app'
 
 // --- Cấu hình phía Canvas (chỉ giữ thứ chỉ Canvas mới có) ---
 // Model, safetySettings và generationConfig nằm ở js/Config/02-api-config.js (game gửi kèm payload).
