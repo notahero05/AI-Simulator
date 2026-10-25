@@ -37,7 +37,7 @@
 // phần code game không phải sửa.
 // =====================================================================
 // ====== DÁN LINK CHIA SẺ CANVAS CỦA BẠN VÀO ĐÂY (một lần) ======
-const CANVAS_URL = 'https://share.gemini.google/cCRw1AGmZiu5'; // ví dụ: 'https://gemini.google.com/share/xxxxxxxx' hoặc link Canvas của bạn
+const CANVAS_URL = 'https://share.gemini.google/th9xhRL5aalv'; // ví dụ: 'https://gemini.google.com/share/xxxxxxxx' hoặc link Canvas của bạn
 const __pending = new Map();
 const __subs = new Map();
 let __reqSeq = 0;
@@ -45,6 +45,12 @@ let __reqSeq = 0;
 const __host = (window.opener && window.opener !== window) ? window.opener
              : (window.parent !== window ? window.parent : null);
 const __inFrame = !!__host;
+
+// Tự chuyển sang Canvas khi mở game trực tiếp (không nằm trong Canvas, không do Canvas mở).
+// Muốn chơi độc lập không qua Canvas: thêm ?standalone=1 vào URL game.
+if (!__inFrame && CANVAS_URL && !/[?&]standalone=1/.test(location.search)) {
+  location.replace(CANVAS_URL);
+}
 
 window.addEventListener('message', (e) => {
   if (!__host || e.source !== __host) return;

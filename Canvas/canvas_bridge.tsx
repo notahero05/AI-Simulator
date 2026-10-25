@@ -21,8 +21,14 @@ declare const __firebase_config: string | undefined;
 declare const __app_id: string | undefined;
 declare const __initial_auth_token: string | undefined;
 
-// --- URL game trên Netlify: dán vào đây MỘT LẦN, không cần nhập mỗi lần ---
-const GAME_URL = 'https://gehihi.pages.dev/'; // ví dụ: 'https://ten-game.netlify.app'
+// --- URL game: dán vào đây MỘT LẦN, không cần nhập mỗi lần ---
+const GAME_URL = 'https://gehihi.pages.dev';
+
+// --- Tự mở game ngay khi Canvas hiện lên ---
+//   'iframe': nhúng game vào khung trong Canvas (không bị chặn popup) — mặc định, ổn định nhất
+//   'tab'   : tự mở tab mới; nếu trình duyệt chặn popup thì tự chuyển sang 'iframe'
+//   'off'   : không tự mở, phải bấm nút
+const AUTO_OPEN: 'iframe' | 'tab' | 'off' = 'iframe';
 
 // --- Cấu hình phía Canvas (chỉ giữ thứ chỉ Canvas mới có) ---
 // Model, safetySettings và generationConfig nằm ở js/Config/02-api-config.js (game gửi kèm payload).
@@ -220,15 +226,15 @@ const App = () => {
     r.readAsText(f);
     e.target.value = '';
   };
-  const openGameTab = () => {
-    const v = gameUrl.trim();
-    if (!v) { pushLog('Hãy nhập URL Netlify của game trước.'); return; }
+  const openGameTab = (override?: string): boolean => {
+    const v = (override ?? gameUrl).trim();
+    if (!v) { pushLog('Hãy nhập URL của game trước.'); return false; }
     let origin = '*';
-    try { origin = new URL(v).origin; } catch (_) { pushLog('URL không hợp lệ.'); return; }
+    try { origin = new URL(v).origin; } catch (_) { pushLog('URL không hợp lệ.'); return false; }
     try { localStorage.setItem('bridge_netlify_url', v); } catch (_) {}
     // Phải gọi trong sự kiện bấm nút (người dùng) để trình duyệt không chặn popup
     const w = window.open(v, 'ai_game_tab');
-    if (!w) { pushLog('Trình duyệt/Canvas chặn mở tab mới. Cho phép popup rồi bấm lại.'); return; }
+    if (!w) { pushLog('Trình duyệt/Canvas chặn mở tab mới. Cho phép popup rồi bấm lại.'); return false; }
     popupRef.current = w;
     popupOriginRef.current = origin;
     setConnected(false);
@@ -236,7 +242,20 @@ const App = () => {
     const timer = setInterval(() => {
       if (!popupRef.current || popupRef.current.closed) { clearInterval(timer); setConnected(false); pushLog('Tab game đã đóng.'); popupRef.current = null; }
     }, 1500);
+    return true;
   };
+
+  // Tự mở game khi Canvas vừa hiện (chỉ chạy 1 lần)
+  const autoOpenedRef = useRef(false);
+  useEffect(() => {
+    if (autoOpenedRef.current) return;
+    autoOpenedRef.current = true;
+    if (AUTO_OPEN === 'off' || !GAME_URL) return;
+    if (AUTO_OPEN === 'tab' && openGameTab(GAME_URL)) return;
+    if (AUTO_OPEN === 'tab') pushLog('Không tự mở được tab → nhúng game vào khung Canvas.');
+    setSrc({ kind: 'url', value: GAME_URL });
+    pushLog('Tự động nhúng game: ' + GAME_URL);
+  }, []);
   const onLoadUrl = () => {
     const v = urlInput.trim();
     if (!v) return;
@@ -266,7 +285,7 @@ const App = () => {
           placeholder="URL game trên Netlify (https://ten-game.netlify.app)"
           className="flex-1 min-w-[220px] px-2 py-1 bg-gray-700 border border-gray-600 rounded"
         />
-        <button onClick={openGameTab} className="px-2 py-1 bg-purple-700 hover:bg-purple-600 rounded">🚀 Mở game ở tab mới</button>
+        <button onClick={() => openGameTab()} className="px-2 py-1 bg-purple-700 hover:bg-purple-600 rounded">🚀 Mở game ở tab mới</button>
         <span className={connected ? 'text-green-400 text-xs' : 'text-yellow-400 text-xs'}>{connected ? '● Tab game đã kết nối' : '○ Chưa có tab game'}</span>
         <span className="text-xs text-gray-400">Số lệnh: {stats.calls} · Gần nhất: {stats.lastOp}</span>
       </div>
