@@ -37,7 +37,7 @@
 // phần code game không phải sửa.
 // =====================================================================
 // ====== DÁN LINK CHIA SẺ CANVAS CỦA BẠN VÀO ĐÂY (một lần) ======
-const CANVAS_URL = 'https://share.gemini.google/th9xhRL5aalv'; // ví dụ: 'https://gemini.google.com/share/xxxxxxxx' hoặc link Canvas của bạn
+const CANVAS_URL = 'https://share.gemini.google/oRtNFSLCIFRV'; // ví dụ: 'https://gemini.google.com/share/xxxxxxxx' hoặc link Canvas của bạn
 const __pending = new Map();
 const __subs = new Map();
 let __reqSeq = 0;

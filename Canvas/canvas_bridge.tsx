@@ -25,10 +25,11 @@ declare const __initial_auth_token: string | undefined;
 const GAME_URL = 'https://gehihi.pages.dev';
 
 // --- Tự mở game ngay khi Canvas hiện lên ---
-//   'iframe': nhúng game vào khung trong Canvas (không bị chặn popup) — mặc định, ổn định nhất
-//   'tab'   : tự mở tab mới; nếu trình duyệt chặn popup thì tự chuyển sang 'iframe'
+//   'tab'   : tự mở tab game mới. Nếu trình duyệt chặn popup (chưa có thao tác bấm nào),
+//             hiện thanh thông báo và sẽ mở ngay ở LẦN BẤM ĐẦU TIÊN bất kỳ trong Canvas
+//   'iframe': nhúng game vào khung trong Canvas (không bị chặn popup)
 //   'off'   : không tự mở, phải bấm nút
-const AUTO_OPEN: 'iframe' | 'tab' | 'off' = 'iframe';
+const AUTO_OPEN: 'iframe' | 'tab' | 'off' = 'tab';
 
 // --- Cấu hình phía Canvas (chỉ giữ thứ chỉ Canvas mới có) ---
 // Model, safetySettings và generationConfig nằm ở js/Config/02-api-config.js (game gửi kèm payload).
@@ -116,6 +117,7 @@ const App = () => {
   const [urlInput, setUrlInput] = useState('');
   const [stats, setStats] = useState({ calls: 0, lastOp: '-', lastError: '' });
   const [log, setLog] = useState<string[]>([]);
+  const [needClick, setNeedClick] = useState(false);
 
   const pushLog = (line: string) => setLog((l) => [new Date().toLocaleTimeString('vi-VN') + ' ' + line, ...l].slice(0, 30));
 
@@ -251,8 +253,19 @@ const App = () => {
     if (autoOpenedRef.current) return;
     autoOpenedRef.current = true;
     if (AUTO_OPEN === 'off' || !GAME_URL) return;
-    if (AUTO_OPEN === 'tab' && openGameTab(GAME_URL)) return;
-    if (AUTO_OPEN === 'tab') pushLog('Không tự mở được tab → nhúng game vào khung Canvas.');
+    if (AUTO_OPEN === 'tab') {
+      if (openGameTab(GAME_URL)) return;
+      // Bị chặn popup: chờ lần bấm đầu tiên (bấm là có "thao tác người dùng" nên được phép mở tab)
+      setNeedClick(true);
+      pushLog('Popup bị chặn → bấm bất kỳ đâu trong Canvas để mở game.');
+      const onFirstClick = () => {
+        document.removeEventListener('pointerdown', onFirstClick, true);
+        setNeedClick(false);
+        openGameTab(GAME_URL);
+      };
+      document.addEventListener('pointerdown', onFirstClick, true);
+      return;
+    }
     setSrc({ kind: 'url', value: GAME_URL });
     pushLog('Tự động nhúng game: ' + GAME_URL);
   }, []);
@@ -289,6 +302,7 @@ const App = () => {
         <span className={connected ? 'text-green-400 text-xs' : 'text-yellow-400 text-xs'}>{connected ? '● Tab game đã kết nối' : '○ Chưa có tab game'}</span>
         <span className="text-xs text-gray-400">Số lệnh: {stats.calls} · Gần nhất: {stats.lastOp}</span>
       </div>
+      {needClick && <div className="px-2 py-2 bg-yellow-700 text-white text-sm text-center font-semibold">Trình duyệt chặn popup tự động — bấm vào bất kỳ đâu trong Canvas để mở game ở tab mới.</div>}
       {stats.lastError && <div className="px-2 py-1 bg-red-900/60 text-red-200 text-xs">Lỗi gần nhất: {stats.lastError}</div>}
       <div className="flex-1 relative">
         {src.kind === 'none' ? (
