@@ -70,7 +70,7 @@ window.addEventListener('message', (e) => {
 });
 
 function bridgeCall(op, args, timeoutMs = 300000) {
-  if (!__inFrame) return Promise.reject(new Error('Chưa kết nối Canvas. Hãy mở game bằng nút \"Mở game ở tab mới\" trong Canvas Bridge (đừng mở trực tiếp URL).'));
+  if (!__inFrame) return Promise.reject(new Error('Chưa kết nối Canvas. Hãy mở game bằng nút \"Mở game\" trong Canvas (đừng mở trực tiếp URL).'));
   return new Promise((resolve, reject) => {
     const id = ++__reqSeq;
     const timer = setTimeout(() => { __pending.delete(id); reject(new Error('Canvas không phản hồi (timeout).')); }, timeoutMs);
@@ -149,9 +149,9 @@ async function geminiFetch(model, payload) {
       b.style.cssText = 'position:fixed;right:8px;bottom:8px;z-index:99998;padding:5px 12px;border-radius:999px;font:12px Arial;color:#fff;opacity:.92';
       b.addEventListener('click', () => {
         if (b.dataset.ok === '1') return;
-        if (!CANVAS_URL) { alert('Chưa cấu hình CANVAS_URL trong game.html. Hãy mở Canvas thủ công, rồi bấm "Mở game ở tab mới" trong Canvas Bridge.'); return; }
+        if (!CANVAS_URL) { alert('Chưa cấu hình CANVAS_URL trong game.html. Hãy mở Canvas thủ công, rồi bấm "Mở game" trong Canvas.'); return; }
         window.open(CANVAS_URL, 'ai_canvas_tab');
-        alert('Đã mở Canvas ở tab khác. Trong Canvas Bridge, bấm "🚀 Mở game ở tab mới" để kết nối lại (tab game này sẽ được dùng lại).');
+        alert('Đã mở Canvas ở tab khác. Bấm "🚀 Mở game" trong Canvas để kết nối lại (tab game này sẽ được dùng lại).');
       });
       document.body.appendChild(b);
     }
