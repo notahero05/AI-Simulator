@@ -4,6 +4,8 @@
 // Game luôn gửi đủ model + safetySettings trong payload; canvas_bridge.tsx
 // chỉ chuyển tiếp (giữ API key và Firebase), KHÔNG có giá trị mặc định riêng.
 // ============================================================================
+const CANVAS_URL = 'https://share.gemini.google/3PWeadC0NVee';
+
 const GEMINI_MODEL_ID = "gemini-2.5-flash";
 const GEMINI_MAX_OUTPUT_TOKENS = 32000;
 const GEMINI_THINKING_BUDGET_HIGH = 24000;
