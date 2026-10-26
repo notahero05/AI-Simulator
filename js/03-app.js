@@ -1011,6 +1011,10 @@ GameSetupScreen = ({
             React.createElement("p", {
   className: "text-xs text-gray-400 italic"
 },
+             )))),
+      React.createElement("div", {
+  className: "space-y-6"
+},
         React.createElement("fieldset", {
   className: "border border-gray-600 p-4 rounded-lg"
 },
