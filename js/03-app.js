@@ -1011,10 +1011,6 @@ GameSetupScreen = ({
             React.createElement("p", {
   className: "text-xs text-gray-400 italic"
 },
-              "Khi tick chọn, AI sẽ được khuyến khích tạo nội dung khiêu dâm, bạo lực cực đoan một cách trần trụi và chi tiết hơn.")))),
-      React.createElement("div", {
-  className: "space-y-6"
-},
         React.createElement("fieldset", {
   className: "border border-gray-600 p-4 rounded-lg"
 },
